@@ -9,21 +9,32 @@ import Foundation
 import Combine
 
 
-class APIClient {
-    func getImageList() async throws -> [ImageData] {
-        let url = ""
-        let request = APIRequest(url: url)
-        
-        let response = try await NetworkManager.request(request, responseType: ImageData.self)
-        
-        // kakao API response 확인 후 코드 추가/수정 필요
-        
-        return []
-    }
-    
+enum ImageSortType: String {
+    case accuracy = "accuracy"
+    case recency = "recency"
 }
 
-// API
-struct ImageData: Codable {
-    let url: String
+class APIClient {
+    static let KAKAO_API_KEY = "bdb2ffa09431876eb9ec34cf7939f6b4"
+    static let baseUrl = "https://dapi.kakao.com"
+    
+    func getImageList(_ query: String, sortType: ImageSortType = .recency, size: Int = 3, page: Int = 1 ) async throws -> ImageSearchResponse {
+        let url =  "/v2/search/image"
+        let header = getAuthorization()
+        
+        let body: [String : Any] = ["query": query,
+                                    "size": size,
+                                    "page": page,
+                                    "sort": sortType.rawValue]
+        
+        let request = APIRequest(baseUrl: APIClient.baseUrl, url: url, headers: header, body: body)
+        
+        let response = try await NetworkManager.request(request, responseType: ImageSearchResponse.self)
+        
+        return response
+    }
+    
+    private func getAuthorization() -> [String: String] {
+        return ["Authorization" : "KakaoAK \(APIClient.KAKAO_API_KEY)"]
+    }
 }
