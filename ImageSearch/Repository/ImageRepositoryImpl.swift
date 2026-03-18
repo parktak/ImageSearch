@@ -5,8 +5,10 @@
 //  Created by 박탁인 on 3/17/26.
 //
 
+import Combine
 
 class ImageRepositoryImpl: ImageRepository {
+    
     private let dataSource: ImageDataSource
     
     private var query = ""
@@ -20,12 +22,16 @@ class ImageRepositoryImpl: ImageRepository {
         self.dataSource = dataSource
     }
     
+    var bookmarkDidChange: AnyPublisher<String, Never> {
+        return dataSource.bookmarkDidChange
+    }
     
     func searchImages(query: String, sortType: ImageSortType = .recency) async throws -> [ImageData] {
         
         self.query = query
         self.sortType = sortType
         currentPage = 1
+        
         
         if query.isEmpty {
             dataSource.clearSearchDataAll()

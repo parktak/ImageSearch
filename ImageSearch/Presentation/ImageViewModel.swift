@@ -24,6 +24,7 @@ class ImageViewModel: ObservableObject {
         isLoading = true
         imageList.removeAll()
         
+        
         Task {
             do {
                 let images = try await repository.searchImages(query: query, sortType: .recency)

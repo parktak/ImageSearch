@@ -6,10 +6,12 @@
 //
 
 import Foundation
-
+import Combine
 
 //검색, 북마크 추가/삭제, 북마크 여부,,, 또 있나?
 protocol ImageDataSource {
+    var bookmarkDidChange: AnyPublisher<String, Never> { get }
+    
     func searchImages(query: String, sortType: ImageSortType, size: Int, page: Int) async throws -> ImageSearchResponse
     func getbookmarkImages() -> [ImageData]
     func addBookmark(_ image: ImageData)

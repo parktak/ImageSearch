@@ -6,9 +6,16 @@
 //
 
 import Foundation
+import Combine
 
 class ImageDataSourceImpl: ImageDataSource {
     let apiClient: APIClient
+    
+    private let bookmarkDidChangeSubject = PassthroughSubject<String, Never>()
+    
+    var bookmarkDidChange: AnyPublisher<String, Never> {
+        return bookmarkDidChangeSubject.eraseToAnyPublisher()
+    }
     
     private var searchImages = [ImageData]()
     private var bookmarkImages = [String: ImageData]()
@@ -51,9 +58,14 @@ class ImageDataSourceImpl: ImageDataSource {
     }
     
     func removeBookmark(_ image: ImageData) {
+        if bookmarkImages[image.imageUrl] == nil {
+            return
+        }
+        
         bookmarkImages.removeValue(forKey: image.imageUrl)
         
         updatesearchImagesBookmarkStatus(imageUrl: image.imageUrl, isBookmark: false)
+        
     }
     
     func isBookmark(_ image: ImageData) -> Bool {
@@ -76,6 +88,7 @@ class ImageDataSourceImpl: ImageDataSource {
     private func updatesearchImagesBookmarkStatus(imageUrl: String, isBookmark: Bool) {
         if let index = searchImages.firstIndex(where: { $0.imageUrl == imageUrl }) {
             searchImages[index].isBookmark = isBookmark
+            bookmarkDidChange.send(imageUrl)
         }
     }
 }
