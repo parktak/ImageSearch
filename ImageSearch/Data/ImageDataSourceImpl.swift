@@ -88,7 +88,7 @@ class ImageDataSourceImpl: ImageDataSource {
     private func updatesearchImagesBookmarkStatus(imageUrl: String, isBookmark: Bool) {
         if let index = searchImages.firstIndex(where: { $0.imageUrl == imageUrl }) {
             searchImages[index].isBookmark = isBookmark
-            bookmarkDidChange.send(imageUrl)
+            bookmarkDidChangeSubject.send(imageUrl)
         }
     }
 }

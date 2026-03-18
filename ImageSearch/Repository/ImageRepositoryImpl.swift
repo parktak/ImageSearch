@@ -5,7 +5,6 @@
 //  Created by 박탁인 on 3/17/26.
 //
 
-import Combine
 
 class ImageRepositoryImpl: ImageRepository {
     
@@ -20,10 +19,6 @@ class ImageRepositoryImpl: ImageRepository {
     
     init(dataSource: ImageDataSource) {
         self.dataSource = dataSource
-    }
-    
-    var bookmarkDidChange: AnyPublisher<String, Never> {
-        return dataSource.bookmarkDidChange
     }
     
     func searchImages(query: String, sortType: ImageSortType = .recency) async throws -> [ImageData] {
@@ -61,16 +56,4 @@ class ImageRepositoryImpl: ImageRepository {
         return !isLastPage && !query.isEmpty
     }
     
-    
-    func getBookmarkImages() -> [ImageData] {
-        return dataSource.getbookmarkImages()
-    }
-    
-    func toggleBookmark(_ image: ImageData) {
-        dataSource.toggleBookmark(image)
-    }
-    
-    func isBookmark(_ image: ImageData) -> Bool {
-        return dataSource.isBookmark(image)
-    }
 }

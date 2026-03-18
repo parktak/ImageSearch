@@ -6,14 +6,9 @@
 //
 
 import Foundation
-import Combine
 
 protocol ImageRepository {
-    var bookmarkDidChange: AnyPublisher<String, Never> { get }
     func searchImages(query: String, sortType: ImageSortType) async throws -> [ImageData]
     func loadMore() async throws -> [ImageData]
     func canLoadMore() -> Bool
-    func getBookmarkImages() -> [ImageData]
-    func toggleBookmark(_ image: ImageData)
-    func isBookmark(_ image: ImageData) -> Bool
 }
