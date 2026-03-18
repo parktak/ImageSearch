@@ -12,10 +12,12 @@ class ImageViewModel: ObservableObject {
     @Published private(set) var imageList = [ImageData]()
     @Published private(set) var isLoading = false
     
-    private let repository: ImageRepository
+    private let imageRepository: ImageRepository
+    private let bookmarkRepository: BookmarkRepository
     
-    init(repository: ImageRepository) {
-        self.repository = repository
+    init(imageRepository: ImageRepository, bookmarkRepository: BookmarkRepository) {
+        self.imageRepository = imageRepository
+        self.bookmarkRepository = bookmarkRepository
     }
     
     func search(_ query: String) {
@@ -27,7 +29,7 @@ class ImageViewModel: ObservableObject {
         
         Task {
             do {
-                let images = try await repository.searchImages(query: query, sortType: .recency)
+                let images = try await imageRepository.searchImages(query: query, sortType: .recency)
                 await MainActor.run {
                     self.imageList = images
                     self.isLoading = false
@@ -42,12 +44,12 @@ class ImageViewModel: ObservableObject {
     }
     
     func loadMore() {
-        guard repository.canLoadMore(), !isLoading else { return }
+        guard imageRepository.canLoadMore(), !isLoading else { return }
         
         isLoading = true
         Task {
             do {
-                let moreImages = try await repository.loadMore()
+                let moreImages = try await imageRepository.loadMore()
                 await MainActor.run {
                     self.imageList.append(contentsOf: moreImages)
                     self.isLoading = false
@@ -62,11 +64,11 @@ class ImageViewModel: ObservableObject {
     }
     
     var canLoadMore: Bool {
-        return repository.canLoadMore()
+        return imageRepository.canLoadMore()
     }
     
     func toggleBookmark(_ image: ImageData) {
-        repository.toggleBookmark(image)
+        bookmarkRepository.toggleBookmark(image)
         
         if let index = imageList.firstIndex(where: { $0.imageUrl == image.imageUrl }) {
             imageList[index].isBookmark.toggle()
@@ -74,7 +76,7 @@ class ImageViewModel: ObservableObject {
     }
     
     func isBookmarked(_ image: ImageData) -> Bool {
-        return repository.isBookmark(image)
+        return bookmarkRepository.isBookmark(image)
     }
     
 }

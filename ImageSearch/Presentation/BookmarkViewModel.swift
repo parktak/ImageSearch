@@ -11,9 +11,9 @@ import Combine
 class BookmarkViewModel: ObservableObject {
     @Published private(set) var bookmarkedImages: [ImageData] = []
     
-    private let repository: ImageRepository
+    private let repository: BookmarkRepository
     
-    init(repository: ImageRepository) {
+    init(repository: BookmarkRepository) {
         self.repository = repository
         loadBookmarks()
     }
