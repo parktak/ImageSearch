@@ -10,61 +10,71 @@ import Combine
 
 class ImageViewModel: ObservableObject {
     @Published private(set) var imageList = [ImageData]()
+    @Published private(set) var isLoading = false
     
     private let repository: ImageRepository
-    private var isEnded = false
-    private var query = ""
-    private var currentPage = 1
-    private let ImageDataSize = 5
     
     init(repository: ImageRepository) {
         self.repository = repository
-//        search("설현")
     }
     
     func search(_ query: String) {
-        
-        self.imageList.removeAll()
-        
         guard !query.isEmpty else { return }
         
-        self.query = query
-        self.isEnded = false
+        isLoading = true
+        imageList.removeAll()
         
-        requestImage(query: query, page: 1)
+        Task {
+            do {
+                let images = try await repository.searchImages(query: query, sortType: .recency)
+                await MainActor.run {
+                    self.imageList = images
+                    self.isLoading = false
+                }
+            } catch {
+                await MainActor.run {
+                    self.isLoading = false
+                }
+                // 에러처리 토스트?
+            }
+        }
     }
     
     func loadMore() {
-        requestImage(query: self.query, page: currentPage + 1)
+        guard repository.canLoadMore(), !isLoading else { return }
+        
+        isLoading = true
+        Task {
+            do {
+                let moreImages = try await repository.loadMore()
+                await MainActor.run {
+                    self.imageList.append(contentsOf: moreImages)
+                    self.isLoading = false
+                }
+            } catch {
+                await MainActor.run {
+                    self.isLoading = false
+                }
+                // 에러처리 토스트?
+            }
+        }
+    }
+    
+    var canLoadMore: Bool {
+        return repository.canLoadMore()
     }
     
     func toggleBookmark(_ image: ImageData) {
         repository.toggleBookmark(image)
+        
+        if let index = imageList.firstIndex(where: { $0.imageUrl == image.imageUrl }) {
+            imageList[index].isBookmark.toggle()
+        }
     }
     
     func isBookmarked(_ image: ImageData) -> Bool {
         return repository.isBookmark(image)
     }
     
-    private func requestImage(query: String, page: Int) {
-        self.currentPage = page
-        
-        Task {
-            do {
-                let result = try await repository.searchImages(query: query, sortType: .recency, size: ImageDataSize, page: page)
-                self.isEnded = result.meta.isEnd
-                
-                await MainActor.run {
-                    self.appendImageData(result.documents)
-                }
-            } catch {
-                // 에러처리 토스트?
-            }
-        }
-    }
-    
-    private func appendImageData(_ list: [ImageData]) {
-        self.imageList.append(contentsOf: list)
-    }
 }
 

@@ -9,7 +9,9 @@ import Foundation
 import Combine
 
 protocol ImageRepository {
-    func searchImages(query: String, sortType: ImageSortType, size: Int, page: Int) async throws -> ImageSearchResponse
+    func searchImages(query: String, sortType: ImageSortType) async throws -> [ImageData]
+    func loadMore() async throws -> [ImageData]
+    func canLoadMore() -> Bool
     func getBookmarkImages() -> [ImageData]
     func toggleBookmark(_ image: ImageData)
     func isBookmark(_ image: ImageData) -> Bool

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    let vm = ImageViewModel()
+    let vm = DIContainer.shared.createImageViewModel()
     
     var body: some View {
         TabView {

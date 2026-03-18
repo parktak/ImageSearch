@@ -19,11 +19,11 @@ class DIContainer {
         return ImageRepositoryImpl(dataSource: self.dataSource)
     }
     
-    private func createImageViewModel() -> ImageViewModel {
+    func createImageViewModel() -> ImageViewModel {
         ImageViewModel(repository: createImageRepository())
     }
     
-    private func createBookmarViewModel() -> BookmarkViewModel {
+    func createBookmarViewModel() -> BookmarkViewModel {
         BookmarkViewModel(repository: createImageRepository())
     }
 }
