@@ -12,7 +12,7 @@ struct ContentView: View {
     
     var body: some View {
         TabView {
-            ImageListView()
+            ImageListView(viewModel: DIContainer.shared.createImageViewModel())
                 .tabItem {
                     Image(uiImage: .remove)
                     Text("First")

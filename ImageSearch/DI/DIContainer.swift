@@ -14,6 +14,8 @@ class DIContainer {
     lazy var dataSource: ImageDataSource = {
         return ImageDataSourceImpl(apiClient: self.apiCLient)
     }()
+    private let cacheManager = ImageCacheManager()
+    
     
     private func createImageRepository() -> ImageRepository {
         return ImageRepositoryImpl(dataSource: self.dataSource)
@@ -29,5 +31,9 @@ class DIContainer {
     
     func createBookmarViewModel() -> BookmarkViewModel {
         BookmarkViewModel(repository: createBookmarkRepository())
+    }
+    
+    func createImageLoader() -> ImageLoader {
+        ImageLoader(imageCacher: self.cacheManager)
     }
 }

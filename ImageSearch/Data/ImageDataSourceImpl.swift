@@ -40,7 +40,7 @@ class ImageDataSourceImpl: ImageDataSource {
             searchImages.append(contentsOf: imagesWithBookmarkStatus)
         }
         
-        return ImageSearchResponse(documents: searchImages, meta: result.meta)
+        return ImageSearchResponse(documents: imagesWithBookmarkStatus, meta: result.meta)
     }
     
     func getbookmarkImages() -> [ImageData] {

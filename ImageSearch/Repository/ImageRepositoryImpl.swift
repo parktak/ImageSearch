@@ -14,7 +14,7 @@ class ImageRepositoryImpl: ImageRepository {
     private var sortType: ImageSortType = .recency
     private var currentPage = 1
     private var isLastPage = false
-    private let pageSize = 5
+    private let pageSize = 10
     
     
     init(dataSource: ImageDataSource) {
