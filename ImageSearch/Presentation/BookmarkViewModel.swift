@@ -10,7 +10,7 @@ import Combine
 
 class BookmarkViewModel: BookmarkController {
     
-    @Published private(set) var bookmarkedImages: [ImageData] = []
+    @Published private(set) var bookmarkList: [BookmarkData] = []
     @Published private(set) var isLoading: Bool = false
     private var cancellables: Set<AnyCancellable> = []
     
@@ -32,7 +32,7 @@ class BookmarkViewModel: BookmarkController {
             return
         }
         isLoading = true
-        bookmarkedImages = repository.getBookmarkImages()
+        bookmarkList = repository.getBookmarkData()
         isLoading = false
     }
     

@@ -9,6 +9,7 @@ import Foundation
 import Combine
 
 class BookmarkRepositoryImpl: BookmarkRepository {
+    
     private let dataSource: ImageDataSource
     
     init(dataSource: ImageDataSource) {
@@ -19,8 +20,8 @@ class BookmarkRepositoryImpl: BookmarkRepository {
         return dataSource.bookmarkDidChange
     }
     
-    func getBookmarkImages() -> [ImageData] {
-        return dataSource.getbookmarkImages()
+    func getBookmarkData() -> [BookmarkData] {
+        return dataSource.getBookmarkData()
     }
     
     func toggleBookmark(_ image: ImageData) {

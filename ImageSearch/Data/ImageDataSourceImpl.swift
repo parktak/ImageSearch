@@ -7,7 +7,6 @@
 
 import Foundation
 import Combine
-
 class ImageDataSourceImpl: ImageDataSource {
     let apiClient: APIClient
     
@@ -17,50 +16,54 @@ class ImageDataSourceImpl: ImageDataSource {
         return bookmarkDidChangeSubject.eraseToAnyPublisher()
     }
     
-    private var bookmarkImages = [String: ImageData]()
+    private var bookmarkData = [String: BookmarkData]()
     
     
     init(apiClient: APIClient) {
         self.apiClient = apiClient
     }
     
-    func searchImages(query: String, sortType: ImageSortType, size: Int, page: Int) async throws -> ImageSearchResponse {
-        let result = try await apiClient.getImageList(query, sortType: sortType, size: size, page: page)
+    func searchImages(query: String, sortType: ImageSortType, size: Int, page: Int) async throws -> [ImageData] {
+        let bookmarkedUrls = Set(bookmarkData.keys)
+        let searchResponse = try await apiClient.getImageList(
+            query,
+            sortType: sortType,
+            size: size,
+            page: page,
+            bookmarkedUrls: bookmarkedUrls
+        )
         
-        let imagesWithBookmarkStatus = result.documents.map { image in
+        let images = searchResponse.documents.map { image in
             var newImage = image
-            newImage.isBookmark = bookmarkImages.keys.contains(image.imageUrl)
-            return newImage
+            newImage.isBookmark = isBookmark(image)
+            return image
         }
         
-        return ImageSearchResponse(documents: imagesWithBookmarkStatus, meta: result.meta)
+        return images
     }
     
-    func getbookmarkImages() -> [ImageData] {
-        return Array(bookmarkImages.values)
+    func getBookmarkData() -> [BookmarkData] {
+        return Array(bookmarkData.values)
+            .sorted { $0.registDate < $1.registDate }
     }
     
     func addBookmark(_ image: ImageData) {
-        guard bookmarkImages[image.imageUrl] == nil else { return }
+        guard bookmarkData[image.imageUrl] == nil else { return }
         
-        var bookmarkedImage = image
-        bookmarkedImage.isBookmark = true
-        bookmarkImages[image.imageUrl] = bookmarkedImage
-        
+        let bookmark = BookmarkData(
+            image: image,
+            registDate: Date()
+        )
+        bookmarkData[image.imageUrl] = bookmark
     }
     
     func removeBookmark(_ image: ImageData) {
-        if bookmarkImages[image.imageUrl] == nil {
-            return
-        }
-        
-        bookmarkImages.removeValue(forKey: image.imageUrl)
-        
-        
+        guard bookmarkData[image.imageUrl] != nil else { return }
+        bookmarkData.removeValue(forKey: image.imageUrl)
     }
     
     func isBookmark(_ image: ImageData) -> Bool {
-        return bookmarkImages[image.imageUrl] != nil
+        return bookmarkData[image.imageUrl] != nil
     }
     
     func toggleBookmark(_ image: ImageData) {
@@ -74,4 +77,3 @@ class ImageDataSourceImpl: ImageDataSource {
     }
     
 }
-

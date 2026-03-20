@@ -30,13 +30,19 @@ struct BookmarkListView: View {
     
     private var imageList: some View {
         List {
-            ForEach(viewModel.bookmarkedImages, id: \.imageUrl) { image in
-                LoadedImageView(image: image, viewModel: viewModel, imageLoader: DIContainer.shared.createImageLoader())
+            ForEach(viewModel.bookmarkList, id: \.imageUrl) { bookmark in
+                VStack(alignment: .leading, spacing: 8) {
+                    LoadedImageView(
+                        image: bookmark.image,
+                        viewModel: viewModel,
+                        imageLoader: DIContainer.shared.createImageLoader()
+                    )
+                }
             }
             
         }
         .overlay {
-            if viewModel.bookmarkedImages.isEmpty && !viewModel.isLoading {
+            if viewModel.bookmarkList.isEmpty && !viewModel.isLoading {
                 emptyStateView
             }
         }

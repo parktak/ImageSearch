@@ -14,14 +14,14 @@ struct ContentView: View {
         TabView {
             ImageListView(viewModel: DIContainer.shared.createImageViewModel())
                 .tabItem {
-                    Image(uiImage: .remove)
-                    Text("First")
+                    Image(systemName: "magnifyingglass")
+                    Text("이미지 검색")
                 }
             
             BookmarkListView(viewModel: DIContainer.shared.createBookmarViewModel())
                 .tabItem {
-                    Image(uiImage: .remove)
-                    Text("second")
+                    Image(systemName: "star.fill")
+                    Text("북마크 이미지")
                 }
             
         }

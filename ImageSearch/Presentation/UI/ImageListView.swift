@@ -58,7 +58,11 @@ struct ImageListView: View {
     private var imageList: some View {
         List {
             ForEach(viewModel.imageList, id: \.imageUrl) { image in
-                LoadedImageView(image: image, viewModel: viewModel, imageLoader: DIContainer.shared.createImageLoader())
+                LoadedImageView(
+                    image: image,
+                    viewModel: viewModel,
+                    imageLoader: DIContainer.shared.createImageLoader()
+                )
                     .onAppear {
                         if image.imageUrl == viewModel.imageList.last?.imageUrl {
                             loadMore()

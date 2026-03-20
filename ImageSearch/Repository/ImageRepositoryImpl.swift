@@ -14,6 +14,7 @@ class ImageRepositoryImpl: ImageRepository {
     private var sortType: ImageSortType = .recency
     private var currentPage = 1
     private var isLastPage = false
+    private var totalCount = 0
     private let pageSize = 10
     
     
@@ -29,16 +30,16 @@ class ImageRepositoryImpl: ImageRepository {
         
         
         if query.isEmpty {
-            dataSource.clearSearchDataAll()
             isLastPage = true
             return []
         }
         
         isLastPage = false
-        let response = try await dataSource.searchImages(query: query, sortType: sortType, size: pageSize, page: currentPage)
+        let images = try await dataSource.searchImages(query: query, sortType: sortType, size: pageSize, page: currentPage)
         
-        isLastPage = response.meta.isEnd
-        return response.documents
+        isLastPage = images.count < pageSize
+        
+        return images
     }
     
     func loadMore() async throws -> [ImageData] {
@@ -46,10 +47,10 @@ class ImageRepositoryImpl: ImageRepository {
         
         currentPage += 1
         
-        let response = try await dataSource.searchImages(query: query, sortType: sortType, size: pageSize, page: currentPage)
+        let images = try await dataSource.searchImages(query: query, sortType: sortType, size: pageSize, page: currentPage)
         
-        isLastPage = response.meta.isEnd
-        return response.documents
+        isLastPage = images.count < pageSize
+        return images
     }
     
     func canLoadMore() -> Bool {

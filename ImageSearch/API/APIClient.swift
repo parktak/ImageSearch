@@ -18,7 +18,13 @@ class APIClient {
     static let KAKAO_API_KEY = "bdb2ffa09431876eb9ec34cf7939f6b4"
     static let baseUrl = "https://dapi.kakao.com"
     
-    func getImageList(_ query: String, sortType: ImageSortType = .recency, size: Int = 3, page: Int = 1 ) async throws -> ImageSearchResponse {
+    func getImageList(
+        _ query: String,
+        sortType: ImageSortType = .recency,
+        size: Int = 3,
+        page: Int = 1,
+        bookmarkedUrls: Set<String> = []
+    ) async throws -> ImageSearchResponse {
         let url =  "/v2/search/image"
         let header = getAuthorization()
         
@@ -29,9 +35,9 @@ class APIClient {
         
         let request = APIRequest(baseUrl: APIClient.baseUrl, url: url, headers: header, body: body)
         
-        let response = try await NetworkManager.request(request, responseType: ImageSearchResponse.self)
+        let responseDTO = try await NetworkManager.request(request, responseType: ImageSearchResponseDTO.self)
         
-        return response
+        return responseDTO.toDomain(bookmarkedUrls: bookmarkedUrls)
     }
     
     private func getAuthorization() -> [String: String] {

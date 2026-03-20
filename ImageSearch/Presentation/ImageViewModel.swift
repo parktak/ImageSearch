@@ -81,9 +81,12 @@ class ImageViewModel: ObservableObject {
             return
         }
         
-        let isCurrentlyBookmarked = bookmarkRepository.isBookmark(imageList[index])
-        imageList[index].isBookmark = isCurrentlyBookmarked
-        objectWillChange.send()
+        var updatedImage = imageList[index]
+        updatedImage.isBookmark = bookmarkRepository.isBookmark(updatedImage)
+        
+        var updatedList = imageList
+        updatedList[index] = updatedImage
+        imageList = updatedList
     }
     
 }

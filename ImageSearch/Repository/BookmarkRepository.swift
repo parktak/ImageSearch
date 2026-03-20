@@ -10,7 +10,7 @@ import Combine
 
 protocol BookmarkRepository {
     var bookmarkDidChange: AnyPublisher<String, Never> { get }
-    func getBookmarkImages() -> [ImageData]
+    func getBookmarkData() -> [BookmarkData]
     func toggleBookmark(_ image: ImageData)
     func isBookmark(_ image: ImageData) -> Bool
 }
