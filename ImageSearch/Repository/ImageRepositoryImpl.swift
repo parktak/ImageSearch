@@ -34,12 +34,7 @@ class ImageRepositoryImpl: ImageRepository {
             return []
         }
         
-        isLastPage = false
-        let images = try await dataSource.searchImages(query: query, sortType: sortType, size: pageSize, page: currentPage)
-        
-        isLastPage = images.count < pageSize
-        
-        return images
+        return try await load()
     }
     
     func loadMore() async throws -> [ImageData] {
@@ -47,9 +42,13 @@ class ImageRepositoryImpl: ImageRepository {
         
         currentPage += 1
         
-        let images = try await dataSource.searchImages(query: query, sortType: sortType, size: pageSize, page: currentPage)
+        return try await load()
+    }
+    
+    private func load() async throws -> [ImageData] {
+        let (images, isLasPage) = try await dataSource.searchImages(query: query, sortType: sortType, size: pageSize, page: currentPage)
         
-        isLastPage = images.count < pageSize
+        isLastPage = isLasPage
         return images
     }
     

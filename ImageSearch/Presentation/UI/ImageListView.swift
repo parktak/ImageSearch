@@ -34,6 +34,13 @@ struct ImageListView: View {
                 .ignoresSafeArea(.keyboard)
             }
         }
+        .alert("오류", isPresented: .constant(viewModel.errorMessage != nil), presenting: viewModel.errorMessage) { _ in
+            Button("확인") {
+                viewModel.clearError()
+            }
+        } message: { error in
+            Text(error)
+        }
     }
     
     private var searchBar: some View {

@@ -23,7 +23,7 @@ class ImageDataSourceImpl: ImageDataSource {
         self.apiClient = apiClient
     }
     
-    func searchImages(query: String, sortType: ImageSortType, size: Int, page: Int) async throws -> [ImageData] {
+    func searchImages(query: String, sortType: ImageSortType, size: Int, page: Int) async throws -> (list: [ImageData], isLastPage: Bool) {
         let bookmarkedUrls = Set(bookmarkData.keys)
         let searchResponse = try await apiClient.getImageList(
             query,
@@ -39,7 +39,7 @@ class ImageDataSourceImpl: ImageDataSource {
             return newImage
         }
         
-        return images
+        return (images, searchResponse.meta.isEnd)
     }
     
     func getBookmarkData() -> [BookmarkData] {

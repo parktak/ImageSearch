@@ -12,7 +12,7 @@ import Combine
 protocol ImageDataSource {
     var bookmarkDidChange: AnyPublisher<String, Never> { get }
     
-    func searchImages(query: String, sortType: ImageSortType, size: Int, page: Int) async throws -> [ImageData]
+    func searchImages(query: String, sortType: ImageSortType, size: Int, page: Int) async throws -> (list: [ImageData], isLastPage: Bool)
     func getBookmarkData() -> [BookmarkData]
     func addBookmark(_ image: ImageData)
     func removeBookmark(_ image: ImageData)

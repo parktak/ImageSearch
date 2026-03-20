@@ -11,6 +11,7 @@ import Combine
 class ImageViewModel: ObservableObject {
     @Published private(set) var imageList = [ImageData]()
     @Published private(set) var isLoading = false
+    @Published private(set) var errorMessage: String?
     
     private let imageRepository: ImageRepository
     private let bookmarkRepository: BookmarkRepository
@@ -42,14 +43,20 @@ class ImageViewModel: ObservableObject {
                 await MainActor.run {
                     self.imageList = images
                     self.isLoading = false
+                    clearError()
                 }
             } catch {
                 await MainActor.run {
                     self.isLoading = false
                 }
-                // 에러처리 토스트?
+                
+                self.errorMessage = error.localizedDescription
             }
         }
+    }
+    
+    func clearError() {
+        errorMessage = nil
     }
     
     func loadMore() {
@@ -62,12 +69,14 @@ class ImageViewModel: ObservableObject {
                 await MainActor.run {
                     self.imageList.append(contentsOf: moreImages)
                     self.isLoading = false
+                    clearError()
                 }
             } catch {
                 await MainActor.run {
                     self.isLoading = false
                 }
-                // 에러처리 토스트?
+                
+                self.errorMessage = error.localizedDescription
             }
         }
     }
