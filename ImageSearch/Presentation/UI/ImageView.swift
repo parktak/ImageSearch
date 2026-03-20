@@ -8,9 +8,9 @@
 import SwiftUI
 
 
-struct LoadedImageView: View {
+struct LoadedImageView<ViewModel: BookmarkController>: View {
     let image: ImageData
-    @ObservedObject var viewModel: ImageViewModel
+    @ObservedObject var viewModel: ViewModel
     @StateObject var imageLoader: ImageLoader
     
     var body: some View {

@@ -74,30 +74,6 @@ struct ImageListView: View {
         }
     }
     
-    private var emptyStateView: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "magnifyingglass")
-                .font(.system(size: 60))
-                .foregroundColor(.gray)
-            
-            Text("검색된 이미지가 없습니다")
-                .font(.title3)
-                .foregroundColor(.gray)
-        }
-    }
-    
-    private var loadingView: some View {
-        HStack {
-            Circle()
-                .fill(.gray.opacity(0.8))
-                .frame(width: 200, height: 200)
-                .overlay {
-                    Text("loading...")
-                        .foregroundStyle(.red)
-                }
-                
-        }
-    }
     private func performSearch() {
         guard !searchText.isEmpty else { return }
         endEditing = false
@@ -114,3 +90,31 @@ struct ImageListView: View {
 //    ImageListView(viewModel: ImageViewModel(repository: ImageRepositoryImpl(dataSource: ImageDataSourceImpl(apiClient: APIClient()))))
 //}
 
+
+extension View {
+    
+    var emptyStateView: some View {
+        VStack(spacing: 16) {
+            Image(systemName: "magnifyingglass")
+                .font(.system(size: 60))
+                .foregroundColor(.gray)
+            
+            Text("검색된 이미지가 없습니다")
+                .font(.title3)
+                .foregroundColor(.gray)
+        }
+    }
+    
+    var loadingView: some View {
+        HStack {
+            Circle()
+                .fill(.gray.opacity(0.8))
+                .frame(width: 200, height: 200)
+                .overlay {
+                    Text("loading...")
+                        .foregroundStyle(.red)
+                }
+                
+        }
+    }
+}

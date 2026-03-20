@@ -18,5 +18,4 @@ protocol ImageDataSource {
     func removeBookmark(_ image: ImageData)
     func isBookmark(_ image: ImageData) -> Bool
     func toggleBookmark(_ image: ImageData)
-    func clearSearchDataAll()
 }

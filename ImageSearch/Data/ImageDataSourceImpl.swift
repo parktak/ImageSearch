@@ -17,7 +17,6 @@ class ImageDataSourceImpl: ImageDataSource {
         return bookmarkDidChangeSubject.eraseToAnyPublisher()
     }
     
-    private var searchImages = [ImageData]()
     private var bookmarkImages = [String: ImageData]()
     
     
@@ -34,12 +33,6 @@ class ImageDataSourceImpl: ImageDataSource {
             return newImage
         }
         
-        if page == 1 {
-            searchImages = imagesWithBookmarkStatus
-        } else {
-            searchImages.append(contentsOf: imagesWithBookmarkStatus)
-        }
-        
         return ImageSearchResponse(documents: imagesWithBookmarkStatus, meta: result.meta)
     }
     
@@ -54,7 +47,6 @@ class ImageDataSourceImpl: ImageDataSource {
         bookmarkedImage.isBookmark = true
         bookmarkImages[image.imageUrl] = bookmarkedImage
         
-        updatesearchImagesBookmarkStatus(imageUrl: image.imageUrl, isBookmark: true)
     }
     
     func removeBookmark(_ image: ImageData) {
@@ -64,7 +56,6 @@ class ImageDataSourceImpl: ImageDataSource {
         
         bookmarkImages.removeValue(forKey: image.imageUrl)
         
-        updatesearchImagesBookmarkStatus(imageUrl: image.imageUrl, isBookmark: false)
         
     }
     
@@ -78,18 +69,9 @@ class ImageDataSourceImpl: ImageDataSource {
         } else {
             addBookmark(image)
         }
+        
+        bookmarkDidChangeSubject.send(image.imageUrl)
     }
     
-    func clearSearchDataAll() {
-        searchImages.removeAll()
-    }
-    
-    
-    private func updatesearchImagesBookmarkStatus(imageUrl: String, isBookmark: Bool) {
-        if let index = searchImages.firstIndex(where: { $0.imageUrl == imageUrl }) {
-            searchImages[index].isBookmark = isBookmark
-            bookmarkDidChangeSubject.send(imageUrl)
-        }
-    }
 }
 

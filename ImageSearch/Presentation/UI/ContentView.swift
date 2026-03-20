@@ -18,7 +18,7 @@ struct ContentView: View {
                     Text("First")
                 }
             
-            BookmarkListView()
+            BookmarkListView(viewModel: DIContainer.shared.createBookmarViewModel())
                 .tabItem {
                     Image(uiImage: .remove)
                     Text("second")

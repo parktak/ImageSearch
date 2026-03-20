@@ -14,10 +14,20 @@ class ImageViewModel: ObservableObject {
     
     private let imageRepository: ImageRepository
     private let bookmarkRepository: BookmarkRepository
+    private var cancellables = Set<AnyCancellable>()
     
     init(imageRepository: ImageRepository, bookmarkRepository: BookmarkRepository) {
         self.imageRepository = imageRepository
         self.bookmarkRepository = bookmarkRepository
+        bindSubject()
+    }
+    
+    private func bindSubject() {
+        bookmarkRepository.bookmarkDidChange
+            .sink { [weak self] imageUrl in
+                self?.updateBookmarkStatus(for: imageUrl)
+            }
+            .store(in: &cancellables)
     }
     
     func search(_ query: String) {
@@ -25,7 +35,6 @@ class ImageViewModel: ObservableObject {
         
         isLoading = true
         imageList.removeAll()
-        
         
         Task {
             do {
@@ -67,17 +76,22 @@ class ImageViewModel: ObservableObject {
         return imageRepository.canLoadMore()
     }
     
-    func toggleBookmark(_ image: ImageData) {
-        bookmarkRepository.toggleBookmark(image)
-        
-        if let index = imageList.firstIndex(where: { $0.imageUrl == image.imageUrl }) {
-            imageList[index].isBookmark.toggle()
+    private func updateBookmarkStatus(for imageUrl: String) {
+        guard let index = imageList.firstIndex(where: { $0.imageUrl == imageUrl }) else {
+            return
         }
-    }
-    
-    func isBookmarked(_ image: ImageData) -> Bool {
-        return bookmarkRepository.isBookmark(image)
+        
+        let isCurrentlyBookmarked = bookmarkRepository.isBookmark(imageList[index])
+        imageList[index].isBookmark = isCurrentlyBookmarked
+        objectWillChange.send()
     }
     
 }
 
+
+
+extension ImageViewModel: BookmarkController {
+    func toggleBookmark(_ image: ImageData) {
+        bookmarkRepository.toggleBookmark(image)
+    }
+}
