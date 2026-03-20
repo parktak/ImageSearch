@@ -43,7 +43,8 @@ struct BookmarkListView: View {
         }
         .overlay {
             if viewModel.bookmarkList.isEmpty && !viewModel.isLoading {
-                emptyStateView
+                emptyStateView("추가된 북마크가 없습니다.",
+                               systemImageName: "plus.circle.fill")
             }
         }
     }

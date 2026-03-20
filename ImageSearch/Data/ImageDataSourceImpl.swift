@@ -36,7 +36,7 @@ class ImageDataSourceImpl: ImageDataSource {
         let images = searchResponse.documents.map { image in
             var newImage = image
             newImage.isBookmark = isBookmark(image)
-            return image
+            return newImage
         }
         
         return images
@@ -45,6 +45,13 @@ class ImageDataSourceImpl: ImageDataSource {
     func getBookmarkData() -> [BookmarkData] {
         return Array(bookmarkData.values)
             .sorted { $0.registDate < $1.registDate }
+            .map { bookmark in
+                var updatedBookmark = bookmark
+                var updatedImage = bookmark.image
+                updatedImage.isBookmark = true
+                updatedBookmark = BookmarkData(image: updatedImage, registDate: bookmark.registDate)
+                return updatedBookmark
+            }
     }
     
     func addBookmark(_ image: ImageData) {
